@@ -1,0 +1,33 @@
+###
+# curl -X POST -H "Content-Type: application/json" -H "Accept: application/json" --data '{"keyId":"default_alias","cipher":"RSA/ECB/PKCS1Padding","request":"-----BEGIN CERTIFICATE REQUEST-----\nMIIErTCCApUCAQAwaDELMAkGA1UEBhMCVVMxFTATBgNVBAoTDEphbm8gVGVzdEFwcDEzMDEGA1UE\nCxMqaW8uYXJnZW50ZWNoLm1vYmlsZS50ZXN0cy5saWJzLmFwcGxpY2F0aW9uMQ0wCwYDVQQDEwRL\naW1pMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA5OSL32jw65aT5PhN8TeDRBtEF3CO\nFNIBjW7tqBMDLg/xMFw+rfoegnpYgnQEGCvGo53T6ZjiGZV6p20rdJlhRlBkLYi81LyHagWoh3n8\n+D1gZmoa36HfNY15A/0WIAJ1DvXygoUN711qd2L+HH+hJs1hSgzjSLk8Ltjo7gGTPdJsmiwAnE+y\n6twJjqV694CmdQCUfYhJ7iWbEsT1tEdFDzodUz+MGtedy8+UzwrGOnSZPhK4gVtkY6e32YMr3zxL\n60JiHM9WYMXN8PMowgS+EIiGRLh8zfQAEY0ZPj8zmu48S27dpiXsCoZBl2B3pqi/xJU/1Pv4uRms\nf/wZls3/C9pMtwhDXaciMQT2UitfM0xwmvE8VPTlrNchuRz5AqZPfYzjPYzkPmc0YFbd3S7b3HCA\nb3YZX7vx6rRytl8Y55kDsLyLOLSm8wcxQk8zia9xWN0+ExooZWN78xf/FpWg6vkzwbE5BtHi4j/R\nRBJ4Y3FImqYp1yxLyY08UoMKkVC7s8PY/+voknvXsm68QUvCav21kxt8znqHv3qtYQMlyoQ4mW97\nzBeMc80LU6usA/G1LnnupQ3ddcYUolg6kO5WoB2Z6/S7Q6AZaKuQo4A1y+UOTWvJ2ilOAmX4dqQu\nVT6RYT8Ggc+9qDvE94ymtefxTpGMmAjL3NXRufLCDKCCnxMCAwEAAaAAMA0GCSqGSIb3DQEBDQUA\nA4ICAQCWjO0X0nw0/xRfO8hOhLbpvRsIrIixRRQ35TGHf+3C7sx7fPNmD9vdbGlbBuBsmjjBwGtD\n58m3cl7XtNA1K4xHK7cOxpxTW3jyLPdIzYOXjKclMjeBkLKCblu214awfSSmeH7g/ijMGMODzC7g\nJx6aso2pvK89KeswISL3+97Dxnq1Y9j1k/k+qB8HclVLNp91rmt+ndDgrHEVlBJ6gweOoPUhH9Eg\nNGJX0UgBCQaJ8knDVMmcsRNOjuhNU9RjQk54oAtN5hIbr4XpID3+6TYtLoAGRiqfC4myaS7hv2rJ\nLb3mYq4srm/399Pio4HYQRLCHxI12rGdZohBVN08RABIGNB4Htr0JyIUbZyluQQlnn/jPAjXFVYr\nrYIsYacRU2z1nnjPb9Mp7eM3tmPB2Xjwd8Y9eJYi6W30SjCJPjbwge3jwWJlXKl0FC3lkn0oBWeM\nM1jaHmKkVofdfuZ3+Y1RE4FEmgtiurQ0Trj0NFkpYdfQ58+5+EJDoOalUeKoSm61PaIkfd5+HJ3u\ngtXF8+T0uFK7oYFnKB9pqy5Rc/kSlTnqNow9jNkuowKzxYaBhcsmtuqWjggDbNtCWUY0N8+XM3JB\nimzfAsjxUYu3LHfcPSwIcSsKD5McxoOGuHapyGvO1bHxvkgp6WR9SWN382wx9XLqR2xY98RaVX+0\ncw0dQw==\n-----END CERTIFICATE REQUEST-----","device":{"platform":"mobile","userAgent":"Mozilla/5.0 (Linux; Android 11; Android SDK built for x86 Build/RSR1.210210.001.A1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.106 Mobile Safari/537.36"},"default":true}' http://10.0.1.143:3000/v1/users/kimi/devices/default_device/csr
+
+POST http://localhost:8080/v1/users/kimi/devices/default_device/csr
+Accept: application/json
+Content-Type: application/json
+Authorization: Basic api-user api-password
+
+{
+  "keyId":"default_alias",
+  "cipher":"RSA/ECB/PKCS1Padding",
+  "signatureAlgorithm": "SHA512",
+  "request":"-----BEGIN CERTIFICATE REQUEST-----\nMIIEqDCCApACAQAwYzELMAkGA1UEBhMCVVMxFTATBgNVBAoTDEphbm8gVGVzdEFwcDEuMCwGA1UE\nCxMlaW8uamFuby5tb2JpbGUudGVzdHMubGlicy5hcHBsaWNhdGlvbjENMAsGA1UEAxMES2ltaTCC\nAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAN8PaJqVGqF6x7DXRMTaZHBEDFZ8fU0KVmuA\nZwYY6FjP38q854zgygGZ+Wf5+8/4kOfZ2hgQPCQybmvxezZ0GdaUPVRcuGdPp7ZlotUJGvuO2qm/\nlSOA2NNdaVYDfpjQ2CCQ2YestZH01mRNlwgXdQcSNNNZlmlhEgy7shzbH+Gx+EcqQsWEICfVGU3o\nv831If/Rtseoaic90Ullqjo3vY7FlAR74i+WrmZt/mw5Caday9pS0zA6jxm/Vp0BAqQ6wmwhVDhg\nvUBPXZd0KkMBBx8VPlxrDK/R7PBScihu1c5ePXsHAsggRJqW+KL6Gkw4KE4p7zX3gtL+qefdy6L/\n6yf3m1nsBLaHmgRc1TmWkGFE12RYa9PBaK1ZTlrA+VbTEpJRCwBIXlzlnSXQ61P/oJhukeJO+vGG\na+9r7sNtMp2hHFfSa4CsiIfkueM08qjXwp6EIjEAovooiAOGCza69o7HOxEPuHNRwZm9/AkgQ+mu\nhWngdSV/E6x5Vtl35+W+Mg7xSf/MzBanuTGDKYzqO+hSgC6T4tOwXgKMahVABGawcLuCPXNww7Px\nueROFS3YWKBfSVXx8BuJHe1npj6P2EzDJZ706pZUSANOw/tw19D9Q2exu7U7Jcv2TqVHonYCv+f8\nUXLrCClj8TQplo9MGV9zXFvT4nOOjr8dwapM03zLAgMBAAGgADANBgkqhkiG9w0BAQ0FAAOCAgEA\nVvkLsDGkoFI5FVHaNqmsQpN5bIPJBnljak00XiK1D+Miy0e1MNeHlUTItifRQ8OWhBf/8tlaFG/p\nrgtU1oRUa/f1L8kP8qCINKIDQU1qAwfRDJht/xLxyHwckBv+ceO4GDHm1epOPKWbQazL9p/3SuYO\n9FYe9j0MALPNCh4dUJ9pVsstex810uV7yrGBBCPELia414RtZvn75lsK2SpWdswBXHVy3iDgaGXv\nQb5po+IyeaxMjFmUT0l2/UnM/Fb+1lK6g8Mf+SrS6pAQ7tuJs9uKtBt/xVN6jHOxCmTwRfDn7ZlI\nzQgOwW0VoMIyB09peKT6xA5OiXePIWS7Qmx48i5KPzAKtJnS5SRTvh+Fnxricj1iM0hIJtgDs5m5\njMqtB0eBkD/TyPZdLCGDpwCpwUiB6CcDvkiWDwNkAiPkaDIUCAvL1FfAqS9bRyzeaLihqJ40bzlx\nZeM5qW0QHRVsg3xuLzVqIRlW6CJYK3sdGNlwV0slAG4DOyz72e0vr32JHF9H2LuYthk8XwuZXCdB\nIXvqS4jqJgK4NterPJoVFqegj0z/0CvOA2RWrg7pC6fbIVfmx1B6QAaoLaF4Ag4Z0JmVzgqksRQD\n+Yh0st+v9/Qs4U+kEGx2bCUlBzCT8OzoTlnUfruH5pdypKnok+tu6vJzS8iQymtJ/LceSE8QHL4=\n-----END CERTIFICATE REQUEST-----",
+  "device": {
+    "platform":"mobile",
+    "userAgent":"Mozilla/5.0 (Linux; Android 11; Android SDK built for x86 Build/RSR1.210210.001.A1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.106 Mobile Safari/537.36"
+    },
+  "default":true
+}
+
+###
+// Secures a message using default device
+POST http://localhost:8080/v1/users/kimi/messages/secure
+Content-Type: application/json
+Authorization: Basic api-user api-password
+
+{
+  "message": "{\"type\":\"debt\",\"amount\":1250.0,\"currency\":\"EUR\",\"commerce\":\"E-Commerce\",\"date\":\"2021-11-20\"}"
+}
+
+###
+// Get service certificate
+GET http://localhost:8080/v1/security/certificate
