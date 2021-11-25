@@ -1,0 +1,649 @@
+openapi: 3.0.1
+info:
+  title: Project Jano
+  description: 'This is the API for the microservices of the Project Jano'
+  termsOfService: https://github.com/project-jano
+  contact:
+    email: ezequiel.aceto+project-jano@gmail.com
+  license:
+    name: Mozilla Public License
+    url: https://www.mozilla.org/en-US/MPL/
+  version: 1.2.1
+servers:
+  - url: http://localhost:8080/
+tags:
+
+  - name: Public
+    description: Public information related to security parameters of this service
+
+  - name: Users
+    description: User operations (certificate requests, challenges, securing messages, documents signing, verifications)
+
+  - name: Health
+    description: Health checks useful for deployment in containers
+
+  - name: Metrics
+    description: Performance metrics of the service
+
+paths:
+
+  /metrics:
+    get:
+      tags:
+        - Metrics
+      summary: Prometheus metrics endpoint
+      responses:
+        200:
+          description: Prometheus response type
+          content:
+            'text/plain':
+              example: |
+                # HELP api_http_duration_seconds Duration of HTTP requests.
+                # TYPE api_http_duration_seconds histogram
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.005"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.01"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.025"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.05"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.1"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.25"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.5"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="1"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="2.5"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="5"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="10"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="+Inf"} 6
+                api_http_duration_seconds_sum{path="/v1/public/certificate"} 0.00042215000000000004
+                api_http_duration_seconds_count{path="/v1/public/certificate"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.005"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.01"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.025"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.05"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.1"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.25"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.5"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="1"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="2.5"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="5"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="10"} 6
+                api_http_duration_seconds_bucket{path="/v1/public/service",le="+Inf"} 6
+                api_http_duration_seconds_sum{path="/v1/public/service"} 0.000348364
+                api_http_duration_seconds_count{path="/v1/public/service"} 6
+                # HELP go_gc_duration_seconds A summary of the pause duration of garbage collection cycles.
+                # TYPE go_gc_duration_seconds summary
+                go_gc_duration_seconds{quantile="0"} 6.2089e-05
+                go_gc_duration_seconds{quantile="0.25"} 6.2089e-05
+                go_gc_duration_seconds{quantile="0.5"} 6.2089e-05
+                go_gc_duration_seconds{quantile="0.75"} 6.2089e-05
+                go_gc_duration_seconds{quantile="1"} 6.2089e-05
+                go_gc_duration_seconds_sum 6.2089e-05
+                go_gc_duration_seconds_count 1
+                # HELP go_goroutines Number of goroutines that currently exist.
+                # TYPE go_goroutines gauge
+                go_goroutines 13
+                # HELP go_info Information about the Go environment.
+                # TYPE go_info gauge
+                go_info{version="go1.16.5"} 1
+                # HELP go_memstats_alloc_bytes Number of bytes allocated and still in use.
+                # TYPE go_memstats_alloc_bytes gauge
+                go_memstats_alloc_bytes 2.832768e+06
+                # HELP go_memstats_alloc_bytes_total Total number of bytes allocated, even if freed.
+                # TYPE go_memstats_alloc_bytes_total counter
+                go_memstats_alloc_bytes_total 4.137976e+06
+                # HELP go_memstats_buck_hash_sys_bytes Number of bytes used by the profiling bucket hash table.
+                # TYPE go_memstats_buck_hash_sys_bytes gauge
+                go_memstats_buck_hash_sys_bytes 1.445794e+06
+                # HELP go_memstats_frees_total Total number of frees.
+                # TYPE go_memstats_frees_total counter
+                go_memstats_frees_total 8826
+                # HELP go_memstats_gc_cpu_fraction The fraction of this program's available CPU time used by the GC since the program started.
+                # TYPE go_memstats_gc_cpu_fraction gauge
+                go_memstats_gc_cpu_fraction 2.5520767896884002e-05
+                # HELP go_memstats_gc_sys_bytes Number of bytes used for garbage collection system metadata.
+                # TYPE go_memstats_gc_sys_bytes gauge
+                go_memstats_gc_sys_bytes 4.835688e+06
+                # HELP go_memstats_heap_alloc_bytes Number of heap bytes allocated and still in use.
+                # TYPE go_memstats_heap_alloc_bytes gauge
+                go_memstats_heap_alloc_bytes 2.832768e+06
+                # HELP go_memstats_heap_idle_bytes Number of heap bytes waiting to be used.
+                # TYPE go_memstats_heap_idle_bytes gauge
+                go_memstats_heap_idle_bytes 6.1898752e+07
+                # HELP go_memstats_heap_inuse_bytes Number of heap bytes that are in use.
+                # TYPE go_memstats_heap_inuse_bytes gauge
+                go_memstats_heap_inuse_bytes 4.489216e+06
+                # HELP go_memstats_heap_objects Number of allocated objects.
+                # TYPE go_memstats_heap_objects gauge
+                go_memstats_heap_objects 6196
+                # HELP go_memstats_heap_released_bytes Number of heap bytes released to OS.
+                # TYPE go_memstats_heap_released_bytes gauge
+                go_memstats_heap_released_bytes 6.0489728e+07
+                # HELP go_memstats_heap_sys_bytes Number of heap bytes obtained from system.
+                # TYPE go_memstats_heap_sys_bytes gauge
+                go_memstats_heap_sys_bytes 6.6387968e+07
+                # HELP go_memstats_last_gc_time_seconds Number of seconds since 1970 of last garbage collection.
+                # TYPE go_memstats_last_gc_time_seconds gauge
+                go_memstats_last_gc_time_seconds 1.637836979713187e+09
+                # HELP go_memstats_lookups_total Total number of pointer lookups.
+                # TYPE go_memstats_lookups_total counter
+                go_memstats_lookups_total 0
+                # HELP go_memstats_mallocs_total Total number of mallocs.
+                # TYPE go_memstats_mallocs_total counter
+                go_memstats_mallocs_total 15022
+                # HELP go_memstats_mcache_inuse_bytes Number of bytes in use by mcache structures.
+                # TYPE go_memstats_mcache_inuse_bytes gauge
+                go_memstats_mcache_inuse_bytes 9600
+                # HELP go_memstats_mcache_sys_bytes Number of bytes used for mcache structures obtained from system.
+                # TYPE go_memstats_mcache_sys_bytes gauge
+                go_memstats_mcache_sys_bytes 16384
+                # HELP go_memstats_mspan_inuse_bytes Number of bytes in use by mspan structures.
+                # TYPE go_memstats_mspan_inuse_bytes gauge
+                go_memstats_mspan_inuse_bytes 95336
+                # HELP go_memstats_mspan_sys_bytes Number of bytes used for mspan structures obtained from system.
+                # TYPE go_memstats_mspan_sys_bytes gauge
+                go_memstats_mspan_sys_bytes 114688
+                # HELP go_memstats_next_gc_bytes Number of heap bytes when next garbage collection will take place.
+                # TYPE go_memstats_next_gc_bytes gauge
+                go_memstats_next_gc_bytes 5.083136e+06
+                # HELP go_memstats_other_sys_bytes Number of bytes used for other system allocations.
+                # TYPE go_memstats_other_sys_bytes gauge
+                go_memstats_other_sys_bytes 1.469182e+06
+                # HELP go_memstats_stack_inuse_bytes Number of bytes in use by the stack allocator.
+                # TYPE go_memstats_stack_inuse_bytes gauge
+                go_memstats_stack_inuse_bytes 720896
+                # HELP go_memstats_stack_sys_bytes Number of bytes obtained from system for stack allocator.
+                # TYPE go_memstats_stack_sys_bytes gauge
+                go_memstats_stack_sys_bytes 720896
+                # HELP go_memstats_sys_bytes Number of bytes obtained from system.
+                # TYPE go_memstats_sys_bytes gauge
+                go_memstats_sys_bytes 7.49906e+07
+                # HELP go_threads Number of OS threads created.
+                # TYPE go_threads gauge
+                go_threads 14
+                # HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.
+                # TYPE process_cpu_seconds_total counter
+                process_cpu_seconds_total 0.06
+                # HELP process_max_fds Maximum number of open file descriptors.
+                # TYPE process_max_fds gauge
+                process_max_fds 1024
+                # HELP process_open_fds Number of open file descriptors.
+                # TYPE process_open_fds gauge
+                process_open_fds 12
+                # HELP process_resident_memory_bytes Resident memory size in bytes.
+                # TYPE process_resident_memory_bytes gauge
+                process_resident_memory_bytes 2.0512768e+07
+                # HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
+                # TYPE process_start_time_seconds gauge
+                process_start_time_seconds 1.63783696744e+09
+                # HELP process_virtual_memory_bytes Virtual memory size in bytes.
+                # TYPE process_virtual_memory_bytes gauge
+                process_virtual_memory_bytes 1.646051328e+09
+                # HELP process_virtual_memory_max_bytes Maximum amount of virtual memory available in bytes.
+                # TYPE process_virtual_memory_max_bytes gauge
+                process_virtual_memory_max_bytes 1.8446744073709552e+19
+                # HELP promhttp_metric_handler_requests_in_flight Current number of scrapes being served.
+                # TYPE promhttp_metric_handler_requests_in_flight gauge
+                promhttp_metric_handler_requests_in_flight 1
+                # HELP promhttp_metric_handler_requests_total Total number of scrapes by HTTP status code.
+                # TYPE promhttp_metric_handler_requests_total counter
+                promhttp_metric_handler_requests_total{code="200"} 2
+                promhttp_metric_handler_requests_total{code="500"} 0
+                promhttp_metric_handler_requests_total{code="503"} 0
+                
+
+
+  /health/liveness:
+    get:
+      tags:
+        - Health
+      summary: Returns an OK response, with information about the host, when the service is up and running
+      operationId: Liveness
+      responses:
+        200:
+          description: Status and name of the host
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/LivenessResponse'
+      
+      
+  /health/readiness:
+    get:
+      tags:
+        - Health
+      summary: Returns an OK response, with information about the host, when the service is ready to receive requests
+      operationId: Readiness
+      responses:
+        200:
+          description: Status and name of the host
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+      
+      
+  /v1/public/certificate:
+    get:
+      tags:
+        - Public
+      summary: Returns the certificate used in this service to encrypt and sign messages
+      operationId: GetCertificates
+      responses:
+        201:
+          description: x509 Certificate in PEM format
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Certificate'
+                
+  /v1/public/service:
+    get:
+      tags:
+        - Public
+      summary: Returns the hostname and fingerprint used by this instance of the service
+      operationId: GetServiceInfo
+      responses:
+        200:
+          description: Hostname and Fingerprint of this instance
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ServiceInformation'
+
+  /v1/users/{userId}/devices/{deviceId}/csr:
+    post:
+      tags:
+        - Users
+      summary: Signs a certificate request and stores its information
+      description: Signs a CSR with CA, and store certificate, public key and user information into our database
+      operationId: SignUserCertificate
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        - in: path
+          name: deviceId
+          required: true
+          schema:
+            type: string
+          example: "abcdef00-0011-3214-abcd-174426614abc"
+      requestBody:
+        description: CSR and User information
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/CertificateSigningRequest'
+        required: true
+      responses:
+        201:
+          description: successfully signed the certificate
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CertificateSigningResponse'
+        400:
+          description: invalid request
+        401:
+          description: invalid API Key
+        409:
+          description: certificate already exists
+
+          
+  /v1/users/{userId}/devices/{deviceId}/payloads/decode:
+    post:
+      tags:
+        - Users
+      summary: Secures a message
+      description: Encrypts a message with all the available public keys for the given user and devices
+      operationId: DecodeSecurePayload
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        - in: path
+          name: deviceId
+          required: true
+          schema:
+            type: string
+          example: "abcdef00-0011-3214-abcd-174426614abc"
+      requestBody:
+        description: Secured payload and related information in order to decrypt it and verify its integrity.
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/DecodeSecuredPayloadRequest'
+        required: true
+      responses:
+        201:
+          description: successfully signed the certificate
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  type: object
+                  anyOf:
+                    - $ref: '#/components/schemas/Payload'
+
+        400:
+          description: Invalid request
+        401:
+          description: Invalid API Key
+        404:
+          description: UserId and/or deviceId not found
+
+
+  /v1/users/{userId}/messages/secure:
+    post:
+      tags:
+        - Users
+      summary: Secures a message
+      description: Encrypts a message with all the available public keys for the given user and devices
+      operationId: SecureMessageForUser
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        - in: query
+          name: devices
+          required: false
+          description: (Comma-separated value) list of devices to use. If not specified, the default device is used if exists. if keyword **all** is used, all the available devices will be used.
+          schema:
+            type: string
+          example: "abcdef00-0011-3214-abcd-174426614abc, fegcab99-2200-1234-dcba-174426614abc"
+      requestBody:
+        description: Message to secure
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/SecureMessageRequest'
+        required: true
+      responses:
+        201:
+          description: successfully signed the certificate
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  type: object
+                  anyOf:
+                    - $ref: '#/components/schemas/SecuredPayload'
+
+        400:
+          description: Invalid request
+        401:
+          description: Invalid API Key
+        404:
+          description: UserId and/or devices not found
+          
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    
+    ReadinessResponse:
+      type: object
+      required:
+        - status
+        - hostname
+      properties:
+        status:
+          type: string
+          example: "ready"
+          description: Status of the service. Always "ready" when the response is OK. Ready means the service is up and running, connected to the Database, and ready to receive requests.
+        hostname:
+          type: string
+          example: "user-service-A45FE"
+          description: Name of the host where the service run
+    
+    LivenessResponse:
+      type: object
+      required:
+        - status
+        - hostname
+      properties:
+        status:
+          type: string
+          example: "up"
+          description: Status of the service. Always "up" when the response is OK
+        hostname:
+          type: string
+          example: "user-service-A45FE"
+          description: Name of the host where the service run
+    
+    DecodeSecuredPayloadRequest:
+      type: object
+      required:
+        - keyId
+        - securedPayload
+        - signature
+      properties:
+        keyId:
+          type: string
+          description: Id of the certificate (alias) in the user's device
+          example: "default_alias"
+        securedPayload:
+          type: string
+          description: Secured payload
+          example: "JlCDYGryyXkLXBByWobzhWjm2fu3AuOZ0sEe+I4+LRQcx+8ZSJplMfonJ5aRH0BjxazosXGrUNNMnrvPkGUrXlbMqaom0DYkaVDWFP3/adg9NeVUxR69X978qHvugzFUXJfUqPuQryz1rE2G3jGUo91DKrK2XVVASDdkOUABufVOm0qfE+WWyJzdodUMFKxp16FIQ580T0bTaUeCRMY5C6qAG7TX547qO2KcWCnhSftRCfid13Ohc3qmTzGfQaFxtd93mlACvrlZRpI4o7veqYOAEhR+/w/rwS5yH6v903W5kCFt9jTyKSfesAPMgaJor4gC4N5GRkG2V3nv+zx1+ZKF/ZFN511U9I84bXu59HoWKBXW+7sCbCD2hMkL1wqWVOXO5CxvtCcxxeNBsUN0sr8/v4ct+8Wzn/+qc7222DEN4eEBs69k6Rx4aDTaRdH6Ig1ZvUFa3YP34T78iywGSd0K7BpdQjTrHmr6x80p/+HmSvY255OyDfkiaynU4gEH6BsUMANxOEVsSZiOA84zdX1ggQ6cqhaM7UFylXDHlwS6Iz/YVrOlILI2V8DJD8uZ8L5NuP7fE9vA01HOjwB1tiOYbH5MPEEln+QWkwSdNzuyRKK3JjttIoxAgHqDm31UGxVkupIaq4M9/9kPSDo5Z4tE5TACq91m4KAiIqQW+s0="
+        signature:
+          type: string
+          description: Signature of the payload field using the hash function
+          example: "cefb2414c887cafec94bf8a7d6f8ec0ac98cefd59085959618b771d087c3f0351023d377cf88b490300d416fa1f8efd5bba1f2f8a2c70efa142f196713d48282238d16a6c74e1c6d66e903ca913a4219827fded0856d002ac8c97f8b19a4ffe27245fd783ad295234a6b05891421a235ee99310fac22e5eee9e1d630e3a0de7e45362515f750aba1d71553ce33b77ef991042a9a24c1ff692059a608de5f60b4ff4ef57e8cf85f9a0dfea6af21724809513d221b1361247e26b55840919231b9ecbb0f212814a28a6bdf569b2ec3fbc573f122f4b881e95dba4eb7622be86f83a1a8610fef4d0d98ba736a06dad568c9fe04409c290f73063ce6091d8169ba30cd9f0bc00d4a4f69ff05e421ca9863feedef29a5d4b1c8fbfff59da92567f64f422d258f6dcc4c3b9376cd1431ac8f301f8b5074fc5ec62786d3c35b709198bd5f51aed94bc569cd24baa4b84d50284ee18a911a6213b3a96d35229003cb2236acc3eab39a02b506f06417659437ddd259c7976a37482196a0874f208379cf2ef1beb568976d3ab6bec1552f35e2ab3f3b53948de7bf6fc61d908559a87cc0492f4580cd70440609d899e91439693caa52d9d198ad431999fdbd22f9ddb328563df5a9d8dd58df00e4a337baaf0ba97ad5abbe3562d59dafbb3cbbe153401256147b56f772ff688d1e745a63441416c6f238a89c901787ef11d47f376f27b751"
+
+    SecureMessageRequest:
+      type: object
+      required:
+        - payload
+      properties:
+        message:
+          type: string
+          description: Message to secure. Either plain text, JSON string, or any other type of structure represented as a string.
+          example: "{\"key\":\"value\"}"
+
+    SecuredPayload:
+      type: object
+      required:
+        - keyId
+        - deviceId
+        - payload
+        - signature
+      properties:
+        keyId:
+          type: string
+          description: Id of the certificate (alias) in the user's device
+          example: "default_alias"
+        deviceId:
+          type: string
+          description: Id of the user's device
+          example: "default_device"
+        payload:
+          type: string
+          description: Secured payload
+          example: "TtBSkwmcyIs1CRpw4y34YCXi6BFkzcprhRV5MBZ6y/3ctc+6zidzsgGQbkK+ZgEzXHVE4sFy07W/3iBVcKLMAbAjoyxLwfd6YoCBtN+QlQsjWQuK5Ji4K2Rj1w/oaAiAuM8usnfTE39CM23Sa6jtbFBMQ5wOtKWjMg26weGsfNISbnNSI5nSwmNhbDB4v/DiwAr2bnQVh5pkJiISa6Ew14HlUpefn7Ctm7pNb9H7s71Efq9Md/idOk1Vdcz3pKiYxx3E9ungyeanMYJVa5o5zrx6DA3Sqzt5I+IcK3X3lv0BACQybSCdaMFLuAWyhcg2r8r7IEL99ApB2z+o2RhRAbWVo7G8hblPdoyYeKmvDd675sI1ng4iVVqAtZthejXYIPeVQ2s1SIQmGOCVWnD3Kifae9xgToXQTZ6S8aBydq35NTfs6BbBvrUWOe2zfDc45AKDYCVHNj9iyhAzPW4TI4Nr5oMsGOHTvdJm9h0xBJoSz2Qlcr0snluijjVwTo36G09k8inUjnkqzd/H/bLDlFzXphJYJf6VdwHwcb4fT8/DDL/fmNyKWDeOkuUWNQwOq0XXBq5XzUcw0acvmslNKSks28lRvro46YEUyHW2UXJYzP/nz0i4lDWUwdA2cgHoHC5XWWC6RFJReIBuim8RrqjcI9BMaRBqjCCpHna82b0="
+        signature:
+          type: string
+          description: Signature of the encryptedPayload field using the hash function
+          example: "IrRYqzklcE/yv/ZD/EbXApQxSHvEaezedLB0gagD2iMnpdO8VUPteF/L53RQGbNFHkAOzKMVUs6Jrhvs0I0WAQVzWP19tv6DCnJMDp2dlk1DJASOGS8JiUrRK4PHNsbwoVXh3Nh3aquaCpcy0n96fQ2ADk8avrDCWirTq2A9PlKL6DlXO/qYXsJGB14RxHPCOOut/Vw0svQIm+LWwoLeL+qWi85Rd0cDFe4FT1fo5c3U/wgrkO7Qh/wS81I/dQpueI9d4c2V0N/v1c7nyjQxF1+25BGdgLjMWoY4p83D3KMxVhsNv1ZbnIF6vkJ7haENex/E94e2/kGlhjnBIyiFeDOYV8Qc9a3uOgSTXbDd4duqAgBRmrftdr1vWdJUD0312IfxOLHZ9ju/cXM15ndUgSNI+e4dfE3mYE87vApG7gPZC/nDm5wD6UUOOxMMUhbP162pEB+yfZ5q3Iry6BcA/Ou6ygyMSajp5nslr2xywWOtL65fSBlqnM0K0/fJatg+mEiJs2kJhtrPf3MU2AaXgEkTqURBb5KJa+9Wq2cGN4J4vjcHLqC1lVzwx5/iSks27vdno8kbxYAmGn/YxAQ4ic0pzK6zFgqjepwHyVxhah5FbT0CP/iOqQKk7PrFEzFzeIH487CeYXP2DSNy9USMiTcamE1urc8+yCs+8lOQRD4="
+          
+    Payload:
+      type: object
+      required:
+        - timestamp
+        - fingerprint
+        - message
+      properties:
+        timestamp:
+          type: integer
+          description: Unix timestamp of the server when securing the payload in mS.
+          example: 1628687400000
+        fingerprint:
+          type: string
+          example: "keyId0"
+          description: The fingerprint of the service instance that encrypted this message
+        message:
+          type: string
+          description: plain text message
+          example: "{\"key\":\"value\"}"
+
+    Device:
+      type: object
+      required:
+        - platform
+        - userAgent
+      properties:
+        platform:
+          type: string
+          enum: [
+              "mobile",
+              "desktop",
+              "tv",
+              "watch",
+              "embedded",
+              "other"
+          ]
+          example: "mobile"
+          description: Platform of the device where the certificate was created
+        userAgent:
+          type: string
+          example: "Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 177.0.0.20.117 (iPhone12,3; iOS 14_4; en_US; en-US; scale=3.00; 1125x2436; 275424340) ProjectJano/1.0.0"
+          description: User agent of the device where the certificate was generated
+          
+    CertificateSigningRequest:
+      type: object
+      required:
+        - keyId
+        - cipher
+        - signatureAlgorithm
+        - request
+        - device
+        - default
+      properties:
+        keyId:
+          type: string
+          example: "keyId0"
+          description: Identifier of this certificate in the user's device
+        cipher:
+          type: string
+          description: Identifier if the transformation that should be used in the cipher
+          example: "RSA/ECB/PKCS1Padding"
+          enum: [
+              "RSA/ECB/PKCS1Padding"
+          ]
+        signatureAlgorithm:
+          type: string
+          description: Identifier of the signature algorithm used when signing a ciphered message
+          example: "SHA512"
+        request:
+          type: string
+          example: |
+            -----BEGIN CERTIFICATE REQUEST-----
+            MIIBnjCB/gIBADBZMSAwHgYJKoZIhvcNAQkBFhFraW1pQGFyZ2VudGVjaC5pbzEo
+            MCYGA1UEAwwfVHJ1c3RlZCBEZXZpY2UgUGxhdGZvcm0gRXhhbXBsZTELMAkGA1UE
+            BhMCRVMwgZswEAYHKoZIzj0CAQYFK4EEACMDgYYABAHpiohZF+1PuEWPKLZtyMWV
+            Pfk6nrQLdxbTzcjRolBHcUm5tlias7XMikBWDmCtCqh/ishmc5u7JA68iQFFl2U9
+            BwDFOzHUojL0tp34gA/umRycN1JAyLKraN4wEjO37DgPW0FhmIzIo9Kqz5TUPGOO
+            soUehYaBr0CFg0Ig+zvl77BhQqAAMAwGCCqGSM49BAMCBQADgYwAMIGIAkIBCE49
+            35lrwQGFSrGyBaSL1kSd/hReBZnbRq5COS9RPNdyOvsqjINnFT0JlOroIPWnpHhB
+            Dq6irJ3ZkRNoMID/60gCQgCjtwLmogjFo3wOytlsBPFKMOyYEMuuI0zYIvfJZnNK
+            i54Z6g9pJ9fb3idPqJ6603F9xK9UE8jiP0Yeg4413DzDkA==
+            -----END CERTIFICATE REQUEST-----
+          description: Certificate Signing Request
+        device:
+          $ref: '#/components/schemas/Device'
+        default:
+          type: boolean
+          example: true
+          description: true if this is the default credential for this user.
+
+    Certificate:
+      type: object
+      required:
+        - certificate
+      properties:
+        certificate:
+          description: Service certificate in PEM format
+          type: string
+          example: |
+            -----BEGIN CERTIFICATE-----
+            MIIBtzCCAVwCCQCVSHEXmd8G8DAKBggqhkjOPQQDAjBjMQswCQYDVQQGEwJFUzEP
+            MA0GA1UECAwGTWFkcmlkMQ8wDQYDVQQHDAZNYWRyaWQxEjAQBgNVBAoMCUFyR2Vu
+            VGVjaDEeMBwGA1UEAwwVVHJ1c3RlZERldmljZVBsYXRmb3JtMB4XDTIxMTEwMzE3
+            MTY0M1oXDTIyMTEwMzE3MTY0M1owYzELMAkGA1UEBhMCRVMxDzANBgNVBAgMBk1h
+            ZHJpZDEPMA0GA1UEBwwGTWFkcmlkMRIwEAYDVQQKDAlBckdlblRlY2gxHjAcBgNV
+            BAMMFVRydXN0ZWREZXZpY2VQbGF0Zm9ybTBZMBMGByqGSM49AgEGCCqGSM49AwEH
+            A0IABB1PvXaz2OzaFLUvnY5e356XYx/FcrNEcO9l6xkmfrgRA4gAWt1H088pntR2
+            rSK3jynZ4pHK07oKswuVnlB8mPUwCgYIKoZIzj0EAwIDSQAwRgIhAJKSTAEawkCN
+            etyZahl2yWPxereeQZ8o4S+GVm26YNGhAiEAwYp8rNAmlOJDET8bzabAkTM0B/wG
+            Jufd0Jne7yKlApY=
+            -----END CERTIFICATE-----
+            
+            
+    ServiceInformation:
+      type: object
+      required: 
+        - fingerprint
+        - hostname
+        - timestamp
+      properties:
+        fingerprint:
+          type: string
+          example: "ready"
+        hostname:
+          type: string
+          example: "user-service-A45FE"
+        timestamp:
+          type: integer
+          description: Unix timestamp of the server when securing the payload in mS.
+          example: 1628687400000
+
+    CertificateSigningResponse:
+      type: object
+      properties:
+        chain:
+          type: string
+          description: Chain of user certificate and certificate used for signing
+          example: |
+            -----BEGIN CERTIFICATE-----
+            MIICEjCCAbigAwIBAgIQG+lBWy7RnQi+iS8eqehNLzAKBggqhkjOPQQDBDBqMQsw
+            CQYDVQQGEwJFUzEPMA0GA1UECAwGTWFkcmlkMQ8wDQYDVQQHDAZNYWRyaWQxEjAQ
+            BgNVBAoMCUFyR2VuVGVjaDElMCMGA1UEAwwcVHJ1c3RlZERldmljZVBsYXRmb3Jt
+            IFJvb3RDQTAeFw0yMTExMDcyMTE1MzVaFw0yMjExMDgwMzE1MzVaMHcxCzAJBgNV
+            BAYTAlVTMREwDwYDVQQKEwh0ZHAtdGVzdDEqMCgGA1UECxMhaW8uYXJnZW50ZWNo
+            Lm1vYmlsZS5saWJzLnRkcC50ZXN0MQ8wDQYDVQQDEwZ1c2VySWQxGDAWBgNVBAUT
+            DzRjMTM4M2Y3YWVmNTdjODBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABKdCUlnW
+            lpvBG93fyb1Cs/TN2f4sxV/S5GGpDWPRMtBtfOlO+jCWCBWfWjyY0nu3fsWUk6Ls
+            SOM2H9wDh7kbNt+jMzAxMA4GA1UdDwEB/wQEAwIEkDAfBgNVHSMEGDAWgBTKycmK
+            sNfTPesFn26EH6l4hX486DAKBggqhkjOPQQDBANIADBFAiEArysInvlLtTCPJjou
+            qFlSDDGpkha4C/lVpFUZL9k32wMCIGYIwC4EOymOZKl6BNUxfK16TsRtP+n6PEh+
+            IOlyDnzm
+            -----END CERTIFICATE-----
+            -----BEGIN CERTIFICATE-----
+            MIICKjCCAc+gAwIBAgIUUfmo+mXrMrtTGpNNjgorEGgxKBAwCgYIKoZIzj0EAwIw
+            ajELMAkGA1UEBhMCRVMxDzANBgNVBAgMBk1hZHJpZDEPMA0GA1UEBwwGTWFkcmlk
+            MRIwEAYDVQQKDAlBckdlblRlY2gxJTAjBgNVBAMMHFRydXN0ZWREZXZpY2VQbGF0
+            Zm9ybSBSb290Q0EwHhcNMjExMTA1MDk1MTEyWhcNMjIxMTA1MDk1MTEyWjBqMQsw
+            CQYDVQQGEwJFUzEPMA0GA1UECAwGTWFkcmlkMQ8wDQYDVQQHDAZNYWRyaWQxEjAQ
+            BgNVBAoMCUFyR2VuVGVjaDElMCMGA1UEAwwcVHJ1c3RlZERldmljZVBsYXRmb3Jt
+            IFJvb3RDQTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABL0/ogh3bOSDMtqkhqDx
+            lj2zJpQI+O3wXYs5kVQFqpG52HtQwfxl9dlmgp+R2a0F6xtFM8QVWshL7wepW2hZ
+            trajUzBRMB0GA1UdDgQWBBTKycmKsNfTPesFn26EH6l4hX486DAfBgNVHSMEGDAW
+            gBTKycmKsNfTPesFn26EH6l4hX486DAPBgNVHRMBAf8EBTADAQH/MAoGCCqGSM49
+            BAMCA0kAMEYCIQCKabTwA6ikPjCbyg+DeFftV5jtbide6zTejmUPsAh/lQIhAIK9
+            kCxxAIyk9EbHi6gvJ6gIYFburmgKUBsAUqq/q9nN
+            -----END CERTIFICATE-----
+
+security:
+  - basicAuth: [ ]
