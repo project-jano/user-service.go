@@ -24,3 +24,9 @@ pkg/
 
 # MongoDB Test database
 tests/db
+
+dist/
+go/bin/
+go/pkg/
+bin/
+

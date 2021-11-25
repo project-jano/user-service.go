@@ -14,7 +14,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/project-jano/user-service.go/go/model"
+	"github.com/project-jano/user-service.go/model"
 )
 
 func (a *API) GetServiceCertificate(w http.ResponseWriter, r *http.Request) {

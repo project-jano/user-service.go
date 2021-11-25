@@ -2,14 +2,15 @@ package app
 
 import (
 	"fmt"
-	"github.com/project-jano/user-service.go/go/api"
-	"github.com/project-jano/user-service.go/go/helpers"
-	"github.com/project-jano/user-service.go/go/security"
-	"github.com/spf13/viper"
 	"net"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/project-jano/user-service.go/api"
+	"github.com/project-jano/user-service.go/helpers"
+	"github.com/project-jano/user-service.go/security"
+	"github.com/spf13/viper"
 )
 
 type Configuration struct {

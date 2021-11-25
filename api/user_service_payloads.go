@@ -13,7 +13,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/project-jano/user-service.go/go/model"
+	"github.com/project-jano/user-service.go/model"
 )
 
 func (a *API) DecodeSecurePayload(w http.ResponseWriter, r *http.Request) {

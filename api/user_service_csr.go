@@ -18,8 +18,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/project-jano/user-service.go/go/model"
-	"github.com/project-jano/user-service.go/go/security"
+	"github.com/project-jano/user-service.go/model"
+	"github.com/project-jano/user-service.go/security"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

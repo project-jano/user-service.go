@@ -17,8 +17,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/project-jano/user-service.go/go/api"
-	"github.com/project-jano/user-service.go/go/app"
+	"github.com/project-jano/user-service.go/api"
+	"github.com/project-jano/user-service.go/app"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

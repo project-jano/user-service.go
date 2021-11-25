@@ -23,8 +23,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/project-jano/user-service.go/go/helpers"
-	"github.com/project-jano/user-service.go/go/model"
+	"github.com/project-jano/user-service.go/helpers"
+	"github.com/project-jano/user-service.go/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )

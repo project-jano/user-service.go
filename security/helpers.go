@@ -13,7 +13,7 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/project-jano/user-service.go/go/model"
+	"github.com/project-jano/user-service.go/model"
 )
 
 // SignCertificateRequest creates a certificate chain with the CSR signed with a root certificate
