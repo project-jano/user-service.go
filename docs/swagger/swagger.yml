@@ -8,7 +8,7 @@ info:
   license:
     name: Mozilla Public License
     url: https://www.mozilla.org/en-US/MPL/
-  version: 1.2.1
+  version: 2.0.0
 servers:
   - url: http://localhost:8080/
 tags:
@@ -26,6 +26,199 @@ tags:
     description: Performance metrics of the service
 
 paths:
+      
+  /v2/public/certificate:
+    get:
+      tags:
+        - Public
+      summary: Returns the certificate used in this service to encrypt and sign messages
+      operationId: GetCertificates
+      responses:
+        201:
+          description: x509 Certificate in PEM format
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Certificate'
+                
+  /v2/public/service:
+    get:
+      tags:
+        - Public
+      summary: Returns the hostname and fingerprint used by this instance of the service
+      operationId: GetServiceInfo
+      responses:
+        200:
+          description: Hostname and Fingerprint of this instance
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ServiceInformation'
+
+  /v2/users/{userId}/devices/{deviceId}/csr:
+    post:
+      tags:
+        - Users
+      summary: Signs a certificate request and stores its information
+      description: Signs a CSR with CA, and store certificate, public key and user information into our database.
+      operationId: SignUserCertificate
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        - in: path
+          name: deviceId
+          required: true
+          schema:
+            type: string
+          example: "abcdef00-0011-3214-abcd-174426614abc"
+      requestBody:
+        description: CSR and User information
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/CertificateSigningRequest'
+        required: true
+      responses:
+        201:
+          description: successfully signed the certificate
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CertificateSigningResponse'
+        400:
+          description: invalid request
+        401:
+          description: invalid API Key
+        409:
+          description: certificate already exists
+
+  /v2/users/{userId}/messages/secure:
+    post:
+      tags:
+        - Users
+      summary: Secures a message
+      description: Encrypts and Signs a message with credentials available for the given parameters. In any case, it will return an array with at least 1 element.
+      operationId: SecureMessageForUser
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        - in: query
+          name: devices
+          required: false
+          description: | 
+            (Comma-separated value) list of devices to use. If not specified, the default device is used if exists. If keyword **all** is used, all the available devices will be used.
+            
+            **WARNING**: Using the default device in a multi-device (per user) environment requires that you keep which device is the default up to date.
+          schema:
+            type: string
+          example: "abcdef00-0011-3214-abcd-174426614abc, fegcab99-2200-1234-dcba-174426614abc" 
+        - in: query
+          name: keys
+          required: false
+          description: |
+            (Comma-separated value) list of keys to find in each of the devices. If not specified, the default key (default_key) is used. If keyword **all** is used, all the available alias for a device will be used.
+            
+            **WARNING**: Only set a value for this field if you are completely sure of what you are doing. One credential, the default one, per device and user is enough for the 99.9% of the applications.
+          schema:
+            type: string
+          example: "default, certificate-1, certificate-2"  
+          allowEmptyValue: false
+          
+      requestBody:
+        description: Message to secure
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/SecureMessageRequest'
+        required: true
+      responses:
+        201:
+          description: successfully created a SecuredMessage based on the message
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  type: object
+                  anyOf:
+                    - $ref: '#/components/schemas/SecuredMessage'
+
+        400:
+          description: Invalid request
+        401:
+          description: Invalid API Key
+        404:
+          description: UserId and/or devices not found
+          
+          
+  /v2/users/{userId}/messages/decode:
+    post:
+      tags:
+        - Users
+      summary: Turns a SecuredMessage into a Text Plain message
+      description: Decrypts a SecuredPayload and verify its integrity using the given parameters.
+      operationId: DecodeSecurePayload
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        - in: query
+          name: deviceId
+          required: false
+          schema:
+            type: string
+          example: "abcdef00-0011-3214-abcd-174426614abc"
+          description: | 
+            The Device ID where the message was secured. If not specified, the default device is used if exists.
+            
+            **WARNING**: Using the default device in a multi-device (per user) environment requires that you keep which device is the default up to date.          
+        - in: query
+          name: keyId
+          required: false
+          schema:
+            type: string
+          example: "abcdef00-0011-3214-abcd-174426614abc"    
+          description: |
+            The Key ID of the private key used to secure the message. If not specified, the default key (default_key) is used. 
+            
+            **WARNING**: Only set a value for this field if you are completely sure of what you are doing. One credential, the default one, per device and user is enough for the 99.9% of the applications.          
+      requestBody:
+        description: Secured payload and related information in order to decrypt it and verify its integrity.
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/DecodeSecuredMessageRequest'
+        required: true
+      responses:
+        201:
+          description: successfully signed the certificate
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  type: object
+                  anyOf:
+                    - $ref: '#/components/schemas/Payload'
+
+        400:
+          description: Invalid request
+        401:
+          description: Invalid API Key
+        404:
+          description: UserId and/or deviceId not found
+
 
   /metrics:
     get:
@@ -40,34 +233,34 @@ paths:
               example: |
                 # HELP api_http_duration_seconds Duration of HTTP requests.
                 # TYPE api_http_duration_seconds histogram
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.005"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.01"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.025"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.05"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.1"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.25"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="0.5"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="1"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="2.5"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="5"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="10"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/certificate",le="+Inf"} 6
-                api_http_duration_seconds_sum{path="/v1/public/certificate"} 0.00042215000000000004
-                api_http_duration_seconds_count{path="/v1/public/certificate"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.005"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.01"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.025"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.05"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.1"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.25"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="0.5"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="1"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="2.5"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="5"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="10"} 6
-                api_http_duration_seconds_bucket{path="/v1/public/service",le="+Inf"} 6
-                api_http_duration_seconds_sum{path="/v1/public/service"} 0.000348364
-                api_http_duration_seconds_count{path="/v1/public/service"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="0.005"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="0.01"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="0.025"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="0.05"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="0.1"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="0.25"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="0.5"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="1"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="2.5"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="5"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="10"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/certificate",le="+Inf"} 6
+                api_http_duration_seconds_sum{path="/v2/public/certificate"} 0.00042215000000000004
+                api_http_duration_seconds_count{path="/v2/public/certificate"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="0.005"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="0.01"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="0.025"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="0.05"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="0.1"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="0.25"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="0.5"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="1"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="2.5"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="5"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="10"} 6
+                api_http_duration_seconds_bucket{path="/v2/public/service",le="+Inf"} 6
+                api_http_duration_seconds_sum{path="/v2/public/service"} 0.000348364
+                api_http_duration_seconds_count{path="/v2/public/service"} 6
                 # HELP go_gc_duration_seconds A summary of the pause duration of garbage collection cycles.
                 # TYPE go_gc_duration_seconds summary
                 go_gc_duration_seconds{quantile="0"} 6.2089e-05
@@ -188,8 +381,6 @@ paths:
                 promhttp_metric_handler_requests_total{code="500"} 0
                 promhttp_metric_handler_requests_total{code="503"} 0
                 
-
-
   /health/liveness:
     get:
       tags:
@@ -203,7 +394,6 @@ paths:
             'application/json':
               schema:
                 $ref: '#/components/schemas/LivenessResponse'
-      
       
   /health/readiness:
     get:
@@ -219,172 +409,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReadinessResponse'
       
-      
-  /v1/public/certificate:
-    get:
-      tags:
-        - Public
-      summary: Returns the certificate used in this service to encrypt and sign messages
-      operationId: GetCertificates
-      responses:
-        201:
-          description: x509 Certificate in PEM format
-          content:
-            'application/json':
-              schema:
-                $ref: '#/components/schemas/Certificate'
-                
-  /v1/public/service:
-    get:
-      tags:
-        - Public
-      summary: Returns the hostname and fingerprint used by this instance of the service
-      operationId: GetServiceInfo
-      responses:
-        200:
-          description: Hostname and Fingerprint of this instance
-          content:
-            'application/json':
-              schema:
-                $ref: '#/components/schemas/ServiceInformation'
-
-  /v1/users/{userId}/devices/{deviceId}/csr:
-    post:
-      tags:
-        - Users
-      summary: Signs a certificate request and stores its information
-      description: Signs a CSR with CA, and store certificate, public key and user information into our database
-      operationId: SignUserCertificate
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-          example: "123e4567-e89b-12d3-a456-426614174000"
-        - in: path
-          name: deviceId
-          required: true
-          schema:
-            type: string
-          example: "abcdef00-0011-3214-abcd-174426614abc"
-      requestBody:
-        description: CSR and User information
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/CertificateSigningRequest'
-        required: true
-      responses:
-        201:
-          description: successfully signed the certificate
-          content:
-            'application/json':
-              schema:
-                $ref: '#/components/schemas/CertificateSigningResponse'
-        400:
-          description: invalid request
-        401:
-          description: invalid API Key
-        409:
-          description: certificate already exists
-
-          
-  /v1/users/{userId}/devices/{deviceId}/payloads/decode:
-    post:
-      tags:
-        - Users
-      summary: Secures a message
-      description: Encrypts a message with all the available public keys for the given user and devices
-      operationId: DecodeSecurePayload
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-          example: "123e4567-e89b-12d3-a456-426614174000"
-        - in: path
-          name: deviceId
-          required: true
-          schema:
-            type: string
-          example: "abcdef00-0011-3214-abcd-174426614abc"
-      requestBody:
-        description: Secured payload and related information in order to decrypt it and verify its integrity.
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/DecodeSecuredPayloadRequest'
-        required: true
-      responses:
-        201:
-          description: successfully signed the certificate
-          content:
-            'application/json':
-              schema:
-                type: array
-                items:
-                  type: object
-                  anyOf:
-                    - $ref: '#/components/schemas/Payload'
-
-        400:
-          description: Invalid request
-        401:
-          description: Invalid API Key
-        404:
-          description: UserId and/or deviceId not found
-
-
-  /v1/users/{userId}/messages/secure:
-    post:
-      tags:
-        - Users
-      summary: Secures a message
-      description: Encrypts a message with all the available public keys for the given user and devices
-      operationId: SecureMessageForUser
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-          example: "123e4567-e89b-12d3-a456-426614174000"
-        - in: query
-          name: devices
-          required: false
-          description: (Comma-separated value) list of devices to use. If not specified, the default device is used if exists. if keyword **all** is used, all the available devices will be used.
-          schema:
-            type: string
-          example: "abcdef00-0011-3214-abcd-174426614abc, fegcab99-2200-1234-dcba-174426614abc"
-      requestBody:
-        description: Message to secure
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/SecureMessageRequest'
-        required: true
-      responses:
-        201:
-          description: successfully signed the certificate
-          content:
-            'application/json':
-              schema:
-                type: array
-                items:
-                  type: object
-                  anyOf:
-                    - $ref: '#/components/schemas/SecuredPayload'
-
-        400:
-          description: Invalid request
-        401:
-          description: Invalid API Key
-        404:
-          description: UserId and/or devices not found
-          
-
 components:
   securitySchemes:
     basicAuth:
@@ -423,20 +447,20 @@ components:
           example: "user-service-A45FE"
           description: Name of the host where the service run
     
-    DecodeSecuredPayloadRequest:
+    DecodeSecuredMessageRequest:
       type: object
       required:
         - keyId
-        - securedPayload
+        - securedMessage
         - signature
       properties:
         keyId:
           type: string
-          description: Id of the certificate (alias) in the user's device
-          example: "default_alias"
-        securedPayload:
+          description: Id of the (private) key in the user's device
+          example: "default_key"
+        securedMessage:
           type: string
-          description: Secured payload
+          description: Secured message
           example: "JlCDYGryyXkLXBByWobzhWjm2fu3AuOZ0sEe+I4+LRQcx+8ZSJplMfonJ5aRH0BjxazosXGrUNNMnrvPkGUrXlbMqaom0DYkaVDWFP3/adg9NeVUxR69X978qHvugzFUXJfUqPuQryz1rE2G3jGUo91DKrK2XVVASDdkOUABufVOm0qfE+WWyJzdodUMFKxp16FIQ580T0bTaUeCRMY5C6qAG7TX547qO2KcWCnhSftRCfid13Ohc3qmTzGfQaFxtd93mlACvrlZRpI4o7veqYOAEhR+/w/rwS5yH6v903W5kCFt9jTyKSfesAPMgaJor4gC4N5GRkG2V3nv+zx1+ZKF/ZFN511U9I84bXu59HoWKBXW+7sCbCD2hMkL1wqWVOXO5CxvtCcxxeNBsUN0sr8/v4ct+8Wzn/+qc7222DEN4eEBs69k6Rx4aDTaRdH6Ig1ZvUFa3YP34T78iywGSd0K7BpdQjTrHmr6x80p/+HmSvY255OyDfkiaynU4gEH6BsUMANxOEVsSZiOA84zdX1ggQ6cqhaM7UFylXDHlwS6Iz/YVrOlILI2V8DJD8uZ8L5NuP7fE9vA01HOjwB1tiOYbH5MPEEln+QWkwSdNzuyRKK3JjttIoxAgHqDm31UGxVkupIaq4M9/9kPSDo5Z4tE5TACq91m4KAiIqQW+s0="
         signature:
           type: string
@@ -446,14 +470,14 @@ components:
     SecureMessageRequest:
       type: object
       required:
-        - payload
+        - message
       properties:
         message:
           type: string
-          description: Message to secure. Either plain text, JSON string, or any other type of structure represented as a string.
+          description: Payload to secure. Either plain text, JSON string, or any other type of structure represented as a string.
           example: "{\"key\":\"value\"}"
 
-    SecuredPayload:
+    SecuredMessage:
       type: object
       required:
         - keyId
@@ -463,20 +487,20 @@ components:
       properties:
         keyId:
           type: string
-          description: Id of the certificate (alias) in the user's device
-          example: "default_alias"
+          description: Id of the (private) key in the user's device
+          example: "default_key"
         deviceId:
           type: string
           description: Id of the user's device
           example: "default_device"
         payload:
           type: string
-          description: Secured payload
+          description: Secured message
           example: "TtBSkwmcyIs1CRpw4y34YCXi6BFkzcprhRV5MBZ6y/3ctc+6zidzsgGQbkK+ZgEzXHVE4sFy07W/3iBVcKLMAbAjoyxLwfd6YoCBtN+QlQsjWQuK5Ji4K2Rj1w/oaAiAuM8usnfTE39CM23Sa6jtbFBMQ5wOtKWjMg26weGsfNISbnNSI5nSwmNhbDB4v/DiwAr2bnQVh5pkJiISa6Ew14HlUpefn7Ctm7pNb9H7s71Efq9Md/idOk1Vdcz3pKiYxx3E9ungyeanMYJVa5o5zrx6DA3Sqzt5I+IcK3X3lv0BACQybSCdaMFLuAWyhcg2r8r7IEL99ApB2z+o2RhRAbWVo7G8hblPdoyYeKmvDd675sI1ng4iVVqAtZthejXYIPeVQ2s1SIQmGOCVWnD3Kifae9xgToXQTZ6S8aBydq35NTfs6BbBvrUWOe2zfDc45AKDYCVHNj9iyhAzPW4TI4Nr5oMsGOHTvdJm9h0xBJoSz2Qlcr0snluijjVwTo36G09k8inUjnkqzd/H/bLDlFzXphJYJf6VdwHwcb4fT8/DDL/fmNyKWDeOkuUWNQwOq0XXBq5XzUcw0acvmslNKSks28lRvro46YEUyHW2UXJYzP/nz0i4lDWUwdA2cgHoHC5XWWC6RFJReIBuim8RrqjcI9BMaRBqjCCpHna82b0="
         signature:
           type: string
-          description: Signature of the encryptedPayload field using the hash function
-          example: "IrRYqzklcE/yv/ZD/EbXApQxSHvEaezedLB0gagD2iMnpdO8VUPteF/L53RQGbNFHkAOzKMVUs6Jrhvs0I0WAQVzWP19tv6DCnJMDp2dlk1DJASOGS8JiUrRK4PHNsbwoVXh3Nh3aquaCpcy0n96fQ2ADk8avrDCWirTq2A9PlKL6DlXO/qYXsJGB14RxHPCOOut/Vw0svQIm+LWwoLeL+qWi85Rd0cDFe4FT1fo5c3U/wgrkO7Qh/wS81I/dQpueI9d4c2V0N/v1c7nyjQxF1+25BGdgLjMWoY4p83D3KMxVhsNv1ZbnIF6vkJ7haENex/E94e2/kGlhjnBIyiFeDOYV8Qc9a3uOgSTXbDd4duqAgBRmrftdr1vWdJUD0312IfxOLHZ9ju/cXM15ndUgSNI+e4dfE3mYE87vApG7gPZC/nDm5wD6UUOOxMMUhbP162pEB+yfZ5q3Iry6BcA/Ou6ygyMSajp5nslr2xywWOtL65fSBlqnM0K0/fJatg+mEiJs2kJhtrPf3MU2AaXgEkTqURBb5KJa+9Wq2cGN4J4vjcHLqC1lVzwx5/iSks27vdno8kbxYAmGn/YxAQ4ic0pzK6zFgqjepwHyVxhah5FbT0CP/iOqQKk7PrFEzFzeIH487CeYXP2DSNy9USMiTcamE1urc8+yCs+8lOQRD4="
+          description: Signature of the encrypted payload field using the hash function
+          example: "IrRYqzklcE/yv/ZD/EbXApQxSHvEaezedLB0gagD2iMnpdO8VUPteF/L53RQGbNFHkAOzKMVUs6Jrhvs0I0WAQVzWP19tv6DCnJMDp2dlk1DJASOGS8JiUrRK4PHNsbwoVXh3Nh3aquaCpcy0n96fQ2ADk8avrDCWirTq2A9PlKL6DlXO/qYXsJGB14RxHPCOOut/Vw0svQIm+LWwoLeL+qWi85Rd0cDFe4FT1fo5c3U/wgrkO7Qh/wS81I/dQpueI9d4c2V0N/v2c7nyjQxF1+25BGdgLjMWoY4p83D3KMxVhsNv1ZbnIF6vkJ7haENex/E94e2/kGlhjnBIyiFeDOYV8Qc9a3uOgSTXbDd4duqAgBRmrftdr1vWdJUD0312IfxOLHZ9ju/cXM15ndUgSNI+e4dfE3mYE87vApG7gPZC/nDm5wD6UUOOxMMUhbP162pEB+yfZ5q3Iry6BcA/Ou6ygyMSajp5nslr2xywWOtL65fSBlqnM0K0/fJatg+mEiJs2kJhtrPf3MU2AaXgEkTqURBb5KJa+9Wq2cGN4J4vjcHLqC1lVzwx5/iSks27vdno8kbxYAmGn/YxAQ4ic0pzK6zFgqjepwHyVxhah5FbT0CP/iOqQKk7PrFEzFzeIH487CeYXP2DSNy9USMiTcamE1urc8+yCs+8lOQRD4="
           
     Payload:
       type: object
@@ -491,7 +515,7 @@ components:
           example: 1628687400000
         fingerprint:
           type: string
-          example: "keyId0"
+          example: "8176747f6127efc931cc9f7e8d5c216ae34de6f7e1528508f2c8ec3abd411e88"
           description: The fingerprint of the service instance that encrypted this message
         message:
           type: string
@@ -533,8 +557,8 @@ components:
       properties:
         keyId:
           type: string
-          example: "keyId0"
-          description: Identifier of this certificate in the user's device
+          example: "MyKey0"
+          description: Id of the (private) key in the user's device
         cipher:
           type: string
           description: Identifier if the transformation that should be used in the cipher
