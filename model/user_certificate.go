@@ -9,7 +9,7 @@ import (
  * Project Jano - User microservice
  * This is the API of Project Jano
  *
- * API version: 1.2.0
+ * API version: 2.0.4
  * Contact: ezequiel.aceto+project-jano@gmail.com
  */
 
@@ -41,15 +41,27 @@ type UserCertificate struct {
 
 func UserCertificatesAppend(arr []UserCertificate, newCert UserCertificate) []UserCertificate {
 	occurred := map[string]bool{}
-	newCertKey := fmt.Sprintf("key=%s;device=%s", newCert.KeyId, newCert.DeviceId)
 	var result []UserCertificate
+
+	newCertKey := fmt.Sprintf("key=%s;device=%s", newCert.KeyId, newCert.DeviceId)
+
 	for _, cert := range arr {
 		certKey := fmt.Sprintf("key=%s;device=%s", cert.KeyId, cert.DeviceId)
-		if certKey != newCertKey && occurred[certKey] == false {
+
+		// Keep only one cert as default
+		if cert.Default_ && newCert.Default_ {
+			cert.Default_ = false
+		}
+
+		// If 'cert' has a different keyId and deviceId as the 'newCert' add it to the list
+		if certKey != newCertKey && !occurred[certKey] {
 			occurred[certKey] = true
 			result = append(result, cert)
 		}
 	}
+
+	// certs will always be appended to this list in order of creation
 	result = append(result, newCert)
+
 	return result
 }

@@ -9,7 +9,7 @@ import (
 
 func (api *API) addSecurityRouter() {
 
-	const version = "/v1"
+	const version = "/v2"
 	const path = "/public"
 
 	securityRouter := mux.NewRouter().PathPrefix(version).PathPrefix(path).Subrouter().StrictSlash(true)

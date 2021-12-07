@@ -4,7 +4,7 @@ package api
  * Project Jano - User microservice
  * This is the API of Project Jano
  *
- * API version: 1.2.0
+ * API version: 2.0.4
  * Contact: ezequiel.aceto+project-jano@gmail.com
 
  */
@@ -26,7 +26,7 @@ import (
 )
 
 func (a *API) SignUserCertificate(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.Header().Set(ContentType, DefaultContentType)
 
 	userId := extractUserId(r)
 	if userId == "" {
@@ -78,7 +78,7 @@ func (a *API) SignUserCertificate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user *model.User
-	filter := bson.D{{Key: "userId", Value: userId}}
+	filter := bson.D{{Key: DBFieldUserId, Value: userId}}
 
 	findError := a.UserDatabase.FindOne(context.TODO(), filter).Decode(&user)
 	if findError != nil {
@@ -95,7 +95,7 @@ func (a *API) SignUserCertificate(w http.ResponseWriter, r *http.Request) {
 
 	user.Certificates = model.UserCertificatesAppend(user.Certificates, userCertificate)
 
-	update := bson.D{{Key: "$set", Value: bson.D{{Key: "certificates", Value: user.Certificates}}}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: DBFieldCertificates, Value: user.Certificates}}}}
 	opts := options.Update().SetUpsert(true)
 	_, upsertErr := a.UserDatabase.UpdateOne(context.TODO(), filter, update, opts)
 	if upsertErr != nil {
@@ -103,7 +103,11 @@ func (a *API) SignUserCertificate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jsonErr := json.NewEncoder(w).Encode(map[string]string{"chain": chainString})
+	certificateSigningResponse := model.CertificateSigningResponse{
+		Chain: chainString,
+	}
+
+	jsonErr := json.NewEncoder(w).Encode(certificateSigningResponse)
 	if jsonErr != nil {
 		a.respondWithJSON(w, http.StatusInternalServerError, "failed to create response")
 	}

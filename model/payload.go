@@ -3,7 +3,7 @@ package model
 /* Project Jano - User microservice
  * This is the API of Project Jano
  *
- * API version: 1.2.0
+ * API version: 2.0.4
  * Contact: ezequiel.aceto+project-jano@gmail.com
  */
 
@@ -13,9 +13,9 @@ type Payload struct {
 	// Unix timestamp of the server when securing the payload in mS.
 	Timestamp int64 `json:"timestamp"`
 
-	// Encrypted payload
-	Message string `json:"message"`
-
 	// Fingerprint of the service where the Payload was encrypted
 	Fingerprint string `json:"fingerprint"`
+
+	// Encrypted payload
+	Message string `json:"message"`
 }

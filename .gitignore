@@ -24,7 +24,9 @@ pkg/
 
 # MongoDB Test database
 tests/db
+dev/db/daya
 
+# Binaries
 dist/
 go/bin/
 go/pkg/

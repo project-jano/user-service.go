@@ -4,7 +4,7 @@ package api
  * Project Jano - User microservice
  * This is the API of Project Jano
  *
- * API version: 1.2.0
+ * API version: 2.0.4
  * Contact: ezequiel.aceto+project-jano@gmail.com
 
  */
@@ -80,7 +80,8 @@ func (a *API) respondWithError(w http.ResponseWriter, code int, message string) 
 
 func (a *API) respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set(ContentType, DefaultContentType)
+
 	w.WriteHeader(code)
 	_, _ = w.Write(response)
 }

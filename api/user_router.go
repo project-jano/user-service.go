@@ -9,7 +9,7 @@ import (
 
 func (api *API) addUserRouter() {
 
-	const version = "/v1"
+	const version = "/v2"
 	const path = "/users"
 
 	userRouter := mux.NewRouter().PathPrefix(version).PathPrefix(path).Subrouter().StrictSlash(true)
@@ -33,10 +33,18 @@ func (api *API) addUserRouter() {
 		},
 
 		Route{
-			"DecodeSecurePayload",
+			"SecurePushNotificationForUser",
 			"POST",
-			"/{userId}/devices/{deviceId}/payloads/decode",
-			api.DecodeSecurePayload,
+			"/{userId}/push-notifications/secure",
+			api.SecurePushNotificationForUser,
+			true,
+		},
+
+		Route{
+			"DecodeSecureMessage",
+			"POST",
+			"/{userId}/messages/decode",
+			api.DecodeSecureMessage,
 			true,
 		},
 	}

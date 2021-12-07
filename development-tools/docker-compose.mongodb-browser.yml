@@ -1,0 +1,18 @@
+version: "3.9"  # optional since v1.27.0
+
+services:
+  mongo-express:
+    image: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo_db_test
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=false
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=Jano
+      - ME_CONFIG_MONGODB_AUTH_USERNAME=Jano
+      - ME_CONFIG_MONGODB_AUTH_PASSWORD=Jano
+      - ME_CONFIG_BASICAUTH_USERNAME=Jano
+      - ME_CONFIG_BASICAUTH_PASSWORD=Jano
+      - ME_CONFIG_OPTIONS_EDITORTHEME=dracula
+    restart: unless-stopped
+    ports:
+      - "9002:8081"

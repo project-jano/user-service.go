@@ -12,18 +12,18 @@ import (
  * Project Jano - User microservice
  * This is the API of Project Jano
  *
- * API version: 1.2.0
+ * API version: 2.0.4
  * Contact: ezequiel.aceto+project-jano@gmail.com
 
  */
 
 func extractUserId(r *http.Request) string {
-	return extractPathParam(r, "userId")
+	return extractPathParam(r, QueryParamUserId)
 
 }
 
 func extractDeviceId(r *http.Request) string {
-	return extractPathParam(r, "deviceId")
+	return extractPathParam(r, QueryParamDeviceId)
 }
 
 func extractPathParam(r *http.Request, pathParam string) string {

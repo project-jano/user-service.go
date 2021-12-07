@@ -5,7 +5,7 @@
 ### View the API documentation
 
 ```sh
-docker-compose up
+docker-compose -f docker-compose.openapi.view.yml up
 ```
 
 Open Swagger UI in your browser at http://localhost:9000/
@@ -13,7 +13,7 @@ Open Swagger UI in your browser at http://localhost:9000/
 ### Edit the API documentation
 
 ```sh
-docker-compose -f docker-compose.develop.yml up
+docker-compose -f docker-compose.openapi.edit.yml up
 ```
 
 Open Swagger Editor in your browser at http://localhost:9001/

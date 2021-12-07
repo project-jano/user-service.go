@@ -1,0 +1,71 @@
+###
+// Sends a CSR 
+
+POST http://localhost:8080/v2/users/kimi/devices/test-emulator/csr
+Accept: application/json
+Content-Type: application/json
+Authorization: Basic api-user api-password
+
+{
+  "keyId":"default",
+  "cipher":"RSA/ECB/PKCS1Padding",
+  "signatureAlgorithm": "SHA512",
+  "request":"-----BEGIN CERTIFICATE REQUEST-----\nMIIEyDCCArACAQAwgYIxCzAJBgNVBAYTAlVTMS4wLAYDVQQLEyVpby5qYW5vLm1vYmlsZS50ZXN0\ncy5saWJzLmFwcGxpY2F0aW9uMRQwEgYDVQQKEwtKYW5vIERldkFwcDEZMBcGCgmSJomT8ixkAQET\nCXRlc3QtdXNlcjESMBAGA1UEAxMJVGVzdCBVc2VyMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIIC\nCgKCAgEAzwHYcdFrnY4D+Fv2kCVNlnCPRi0QlvkNxzFe1KexmatTSK4xZrOYz6FnnVBUFxuWWx+D\n6R/iB0n8PpDpH23eyXRfE2Fqi0vwOBE8I4f8mAezriFoJXQX9/RPc5Z66M3P4MFurmP7FyDWuqJX\n0tMldt2fww2RjJIcRXdXm8NmKdFP+LCY27j2qvnPX9c9A727hT1b4g0msD8uRXAQC3m7yxWQmW5U\nkNg8VbvnXr66tJaxZz/6lf8EXdnWE7aAlNhQ2wusJ58KgtO8ZlwG6BuLof7rmrUW/thsADVYdeI5\nrKncMu0vXJI177TleFC12xKcS80kuPlnEoGFC5hjsnHUOTeivjlKiwdqhyMm/UjS5COq0GTw34vk\nhz2NKhmXm9ZijSrwQEzMdGwQXqMBrcZ8u5udAfJPcIDxS1fYb2+sIzSoLkQfIs+dc6qlHfOy8PBw\nNuCji0cuXQe0On5RoKzDeQhPnyaNU3uRWRpiycHKFZZ0/uZUXCTioOa2Lk/diGIryUtIHk0nMQeY\nrShUf7nQgeXNQTlVyqN1z7QbRHPt+WZr9/1Ygj8d4CDQEm6O4Z7d9mIv36xfRoOiNGGVYVup6ERg\nD/vOc13TLobk+IONpqz9OYGs8c7cwTI+PSmRwmiiZEZ5UMOzS5zKUiZQRxDC55zGIxia0ZvOm+hn\ntIFRBXMCAwEAAaAAMA0GCSqGSIb3DQEBDQUAA4ICAQBBKs8IUqNr65M7GNijcHWD/sDgngDsbuGL\nxZmpgxyaCjd59USKX1rMSkAW5hbR0yINStQ/fZkDeV9mckEj/pwLQn1NDjttw10Qpyq2yxPbv6/8\nsnswGbfuur9k8wF6JVieb75sUkM5RpuloZ6HeNexGqrJXWA9FRLVNaj0XozpQa6ya3zfGU3TQqRv\ncSCwtAilISpp42Fz4bJ9+AAcR8igQYiMdTXbrPShGNnn0U6dI3569LZBFmNwS72USDJ2KKsM3uq6\nTbS4fa/6bnbjxh+16Ryanx9I8EIzJLNZlSJFtZFqo3fYmJeu8fsqxpyrlKRBVSzf0u/wmLom07e9\nfcVz+ChjfWlwKfgEntiCFZaZdexIAmXhb/N00HqwCBpBIXC+84aurhiQ0yz31Ki9N9lYUD74flnw\nlgJzMQ/fqhWSKlQO7G+BTCQQtlxjcrOHeJb4BsmdXAY8GG3VhrliZcdn34dYlEcGjUzlcRq8EAW1\n9Dn5M0ZEpJLo3S21q7/2ciFpt/epuLKfk50t9jOgPqxAmbQY2RSh+IoL4AxIgtqokLK6YSkjfWIA\nA0NcUSuwcvFHzQHV0n7Iu0UB4jf0UGvNO1ZDs6KrHbdS3XYmz6J/bZ8TDw3he1DNwNhm8HfcYGlS\noncoYTHKuO8MEjTNS56zio5h3lI4MA8kit0e7ZkLUg==\n-----END CERTIFICATE REQUEST-----",
+  "device": {
+    "platform":"mobile",
+    "userAgent":"Mozilla/5.0 (Linux; Android 11; Android SDK built for x86 Build/RSR1.210210.001.A1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.106 Mobile Safari/537.36"
+    },
+  "default": true
+}
+
+###
+// Secures a message using default device with default key
+POST http://localhost:8080/v2/users/kimi/messages/secure
+Content-Type: application/json
+Authorization: Basic api-user api-password
+
+{
+  "message": "{\"type\":\"debt\",\"amount\":1250.0,\"currency\":\"EUR\",\"commerce\":\"E-Commerce\",\"date\":\"2021-11-20\"}"
+}
+
+
+###
+// Secures a psh notification information using default device
+POST http://localhost:8080/v2/users/kimi/push-notifications/secure?splittedOutput=true&completeOutput=false
+Content-Type: application/json
+Authorization: Basic api-user api-password
+
+{
+  "body": "Debítamos de tu cuenta AR$ 1024 por tu compra en MercadoLibre",
+  "payload": "{\"type\":\"debt\",\"amount\":1024.0,\"currency\":\"ARS\",\"commerce\":\"E-Commerce\",\"date\":\"2021-11-20\"}"
+}
+
+
+###
+// Get certificate
+GET http://localhost:8080/v2/public/certificate
+
+###
+// Get service information
+GET http://localhost:8080/v2/public/service
+
+
+###
+// SHOULD FAIL! Secures a message using default device and unknown key
+POST http://localhost:8080/v2/users/kimi/messages/secure?keyId=unknown
+Content-Type: application/json
+Authorization: Basic api-user api-password
+
+{
+  "message": "{\"type\":\"debt\",\"amount\":1250.0,\"currency\":\"EUR\",\"commerce\":\"E-Commerce\",\"date\":\"2021-11-20\"}"
+}
+
+###
+// SHOULD FAIL! Secures a message using an unknown device and default key
+POST http://localhost:8080/v2/users/kimi/messages/secure?deviceIds=unknown
+Content-Type: application/json
+Authorization: Basic api-user api-password
+
+{
+  "message": "{\"type\":\"debt\",\"amount\":1250.0,\"currency\":\"EUR\",\"commerce\":\"E-Commerce\",\"date\":\"2021-11-20\"}"
+}

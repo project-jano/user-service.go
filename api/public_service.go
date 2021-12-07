@@ -4,7 +4,7 @@ package api
  * Project Jano - User microservice
  * This is the API of Project Jano
  *
- * API version: 1.2.0
+ * API version: 2.0.4
  * Contact: ezequiel.aceto+project-jano@gmail.com
  */
 
@@ -18,7 +18,8 @@ import (
 )
 
 func (a *API) GetServiceCertificate(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.Header().Set(ContentType, DefaultContentType)
+
 	certificate := model.Certificate{
 		Certificate: a.Configuration.CertificatePEM,
 	}
@@ -29,14 +30,14 @@ func (a *API) GetServiceCertificate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) GetServiceInfo(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.Header().Set(ContentType, DefaultContentType)
 
 	hostname, hostnameErr := os.Hostname()
 	if hostnameErr != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	serviceInfo := model.ServiceInfo{
+	serviceInfo := model.ServiceInformation{
 		Hostname:    hostname,
 		Timestamp:   time.Now().Unix(),
 		Fingerprint: a.Fingerprint,

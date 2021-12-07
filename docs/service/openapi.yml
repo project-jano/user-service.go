@@ -8,7 +8,7 @@ info:
   license:
     name: Mozilla Public License
     url: https://www.mozilla.org/en-US/MPL/
-  version: 2.0.0
+  version: 2.0.4
 servers:
   - url: http://localhost:8080/
 tags:
@@ -111,7 +111,7 @@ paths:
             type: string
           example: "123e4567-e89b-12d3-a456-426614174000"
         - in: query
-          name: devices
+          name: deviceIds
           required: false
           description: | 
             (Comma-separated value) list of devices to use. If not specified, the default device is used if exists. If keyword **all** is used, all the available devices will be used.
@@ -121,15 +121,15 @@ paths:
             type: string
           example: "abcdef00-0011-3214-abcd-174426614abc, fegcab99-2200-1234-dcba-174426614abc" 
         - in: query
-          name: keys
+          name: keyId
           required: false
           description: |
-            (Comma-separated value) list of keys to find in each of the devices. If not specified, the default key (default_key) is used. If keyword **all** is used, all the available alias for a device will be used.
+            The Key ID of the private key used to secure the message. If not specified, the default key ("default") is used. 
             
             **WARNING**: Only set a value for this field if you are completely sure of what you are doing. One credential, the default one, per device and user is enough for the 99.9% of the applications.
           schema:
             type: string
-          example: "default, certificate-1, certificate-2"  
+          example: "default"  
           allowEmptyValue: false
           
       requestBody:
@@ -141,7 +141,7 @@ paths:
         required: true
       responses:
         201:
-          description: successfully created a SecuredMessage based on the message
+          description: Successfully created a SecuredMessage based on the message
           content:
             'application/json':
               schema:
@@ -165,7 +165,7 @@ paths:
         - Users
       summary: Turns a SecuredMessage into a Text Plain message
       description: Decrypts a SecuredPayload and verify its integrity using the given parameters.
-      operationId: DecodeSecurePayload
+      operationId: DecodeSecureMessage
       parameters:
         - in: path
           name: userId
@@ -180,7 +180,7 @@ paths:
             type: string
           example: "abcdef00-0011-3214-abcd-174426614abc"
           description: | 
-            The Device ID where the message was secured. If not specified, the default device is used if exists.
+            The Device ID where the message was secured. If not specified, the default device is used.
             
             **WARNING**: Using the default device in a multi-device (per user) environment requires that you keep which device is the default up to date.          
         - in: query
@@ -188,9 +188,9 @@ paths:
           required: false
           schema:
             type: string
-          example: "abcdef00-0011-3214-abcd-174426614abc"    
+          example: "default"
           description: |
-            The Key ID of the private key used to secure the message. If not specified, the default key (default_key) is used. 
+            The Key ID of the private key used to secure the message. If not specified, the default key (default) is used. 
             
             **WARNING**: Only set a value for this field if you are completely sure of what you are doing. One credential, the default one, per device and user is enough for the 99.9% of the applications.          
       requestBody:
@@ -219,7 +219,85 @@ paths:
         404:
           description: UserId and/or deviceId not found
 
+  /v2/users/{userId}/push-notifications/secure:
+    post:
+      tags:
+        - Users
+      summary: Secures a push notification
+      description: Encrypts and Signs a message of type push notification (title, subtitle and payload) with credentials available for the given parameters. In any case, it will return an array with at least 1 element.
+      operationId: SecurePushNotificationForUser
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        - in: query
+          name: deviceIds
+          required: false
+          description: | 
+            (Comma-separated value) list of devices to use. If not specified, the default device is used if exists. If keyword **all** is used, all the available devices will be used.
+            
+            **WARNING**: Using the default device in a multi-device (per user) environment requires that you keep which device is the default up to date.
+          schema:
+            type: string
+          example: "abcdef00-0011-3214-abcd-174426614abc, fegcab99-2200-1234-dcba-174426614abc" 
+        - in: query
+          name: completeOutput
+          required: false
+          description: If *true* returns the complete output of the encrypted text and its signature.
+          schema:
+            type: boolean
+            default: true
+          allowEmptyValue: true
+        - in: query
+          name: splittedOutput
+          required: false
+          description: If *true* returns the splitted output of the encrypted text and its signature.
+          schema:
+            type: boolean
+            default: false
+          allowEmptyValue: true
+        - in: query
+          name: keyId
+          required: false
+          description: |
+            The Key ID of the private key used to secure the message. If not specified, the default key ("default") is used. 
+            
+            **WARNING**: Only set a value for this field if you are completely sure of what you are doing. One credential, the default one, per device and user is enough for the 99.9% of the applications.
+          schema:
+            type: string
+          example: "default"
+          allowEmptyValue: false
+          
+      requestBody:
+        description: Push notification
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/SecurePushNotificationRequest'
+        required: true
+      responses:
+        201:
+          description: Successfully created a SecuredMessage based on the message
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  type: object
+                  anyOf:
+                    - $ref: '#/components/schemas/SecuredPushNotification'
 
+        400:
+          description: Invalid request
+        401:
+          description: Invalid API Key
+        404:
+          description: UserId and/or devices not found
+          
+          
   /metrics:
     get:
       tags:
@@ -457,7 +535,7 @@ components:
         keyId:
           type: string
           description: Id of the (private) key in the user's device
-          example: "default_key"
+          example: "default"
         securedMessage:
           type: string
           description: Secured message
@@ -488,11 +566,11 @@ components:
         keyId:
           type: string
           description: Id of the (private) key in the user's device
-          example: "default_key"
+          example: "default"
         deviceId:
           type: string
           description: Id of the user's device
-          example: "default_device"
+          example: "test-device-1"
         payload:
           type: string
           description: Secured message
@@ -501,6 +579,22 @@ components:
           type: string
           description: Signature of the encrypted payload field using the hash function
           example: "IrRYqzklcE/yv/ZD/EbXApQxSHvEaezedLB0gagD2iMnpdO8VUPteF/L53RQGbNFHkAOzKMVUs6Jrhvs0I0WAQVzWP19tv6DCnJMDp2dlk1DJASOGS8JiUrRK4PHNsbwoVXh3Nh3aquaCpcy0n96fQ2ADk8avrDCWirTq2A9PlKL6DlXO/qYXsJGB14RxHPCOOut/Vw0svQIm+LWwoLeL+qWi85Rd0cDFe4FT1fo5c3U/wgrkO7Qh/wS81I/dQpueI9d4c2V0N/v2c7nyjQxF1+25BGdgLjMWoY4p83D3KMxVhsNv1ZbnIF6vkJ7haENex/E94e2/kGlhjnBIyiFeDOYV8Qc9a3uOgSTXbDd4duqAgBRmrftdr1vWdJUD0312IfxOLHZ9ju/cXM15ndUgSNI+e4dfE3mYE87vApG7gPZC/nDm5wD6UUOOxMMUhbP162pEB+yfZ5q3Iry6BcA/Ou6ygyMSajp5nslr2xywWOtL65fSBlqnM0K0/fJatg+mEiJs2kJhtrPf3MU2AaXgEkTqURBb5KJa+9Wq2cGN4J4vjcHLqC1lVzwx5/iSks27vdno8kbxYAmGn/YxAQ4ic0pzK6zFgqjepwHyVxhah5FbT0CP/iOqQKk7PrFEzFzeIH487CeYXP2DSNy9USMiTcamE1urc8+yCs+8lOQRD4="
+          
+    SecurePushNotificationRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the Push Notification
+          example: "Hello, world!"
+        subtitle:
+          type: string
+          description: Subtitle of the Push Notification
+          example: "This is the subtitle"          
+        payload:
+          type: string
+          description: A JSON (string) of parameters
+          example: "{\"key-1\":\"value-a\", \"key-2\":\"value-b\"}"
           
     Payload:
       type: object
@@ -522,6 +616,69 @@ components:
           description: plain text message
           example: "{\"key\":\"value\"}"
 
+          
+    SecuredPushNotification:
+      type: object
+      required:
+        - keyId
+        - deviceId
+        - payload
+        - signature
+      properties:
+        keyId:
+          type: string
+          description: Id of the (private) key in the user's device
+          example: "default"
+        deviceId:
+          type: string
+          description: Id of the user's device
+          example: "test-device-1"
+        payload:
+          type: object
+          required: 
+            - complete
+            - splitted
+          properties:
+            complete:
+              type: string
+              description: Secured push notification in complete string
+              example: "TtBSkwmcyIs1CRpw4y34YCXi6BFkzcprhRV5MBZ6y/3ctc+6zidzsgGQbkK+ZgEzXHVE4sFy07W/3iBVcKLMAbAjoyxLwfd6YoCBtN+QlQsjWQuK5Ji4K2Rj1w/oaAiAuM8usnfTE39CM23Sa6jtbFBMQ5wOtKWjMg26weGsfNISbnNSI5nSwmNhbDB4v/DiwAr2bnQVh5pkJiISa6Ew14HlUpefn7Ctm7pNb9H7s71Efq9Md/idOk1Vdcz3pKiYxx3E9ungyeanMYJVa5o5zrx6DA3Sqzt5I+IcK3X3lv0BACQybSCdaMFLuAWyhcg2r8r7IEL99ApB2z+o2RhRAbWVo7G8hblPdoyYeKmvDd675sI1ng4iVVqAtZthejXYIPeVQ2s1SIQmGOCVWnD3Kifae9xgToXQTZ6S8aBydq35NTfs6BbBvrUWOe2zfDc45AKDYCVHNj9iyhAzPW4TI4Nr5oMsGOHTvdJm9h0xBJoSz2Qlcr0snluijjVwTo36G09k8inUjnkqzd/H/bLDlFzXphJYJf6VdwHwcb4fT8/DDL/fmNyKWDeOkuUWNQwOq0XXBq5XzUcw0acvmslNKSks28lRvro46YEUyHW2UXJYzP/nz0i4lDWUwdA2cgHoHC5XWWC6RFJReIBuim8RrqjcI9BMaRBqjCCpHna82b0="
+            splitted:
+              type: array
+              items:
+                type: string
+              description: Payload splitted in strings of 200 chars max (Firebase Limitation)
+              example:
+                [
+                  "TtBSkwmcyIs1CRpw4y34YCXi6BFkzcprhRV5MBZ6y/3ctc+6zidzsgGQbkK+ZgEzXHVE4sFy07W/3iBVcKLMAbAjoyxLwfd6YoCBtN+QlQsjWQuK5Ji4K2Rj1w/oaAiAuM8usnfTE39CM23Sa6jtbFBMQ5wOtKWjMg26weGsfNISbnNSI5nSwmNhbDB4v/DiwAr2bnQV",
+                  "h5pkJiISa6Ew14HlUpefn7Ctm7pNb9H7s71Efq9Md/idOk1Vdcz3pKiYxx3E9ungyeanMYJVa5o5zrx6DA3Sqzt5I+IcK3X3lv0BACQybSCdaMFLuAWyhcg2r8r7IEL99ApB2z+o2RhRAbWVo7G8hblPdoyYeKmvDd675sI1ng4iVVqAtZthejXYIPeVQ2s1SIQmGOCV",
+                  "WnD3Kifae9xgToXQTZ6S8aBydq35NTfs6BbBvrUWOe2zfDc45AKDYCVHNj9iyhAzPW4TI4Nr5oMsGOHTvdJm9h0xBJoSz2Qlcr0snluijjVwTo36G09k8inUjnkqzd/H/bLDlFzXphJYJf6VdwHwcb4fT8/DDL/fmNyKWDeOkuUWNQwOq0XXBq5XzUcw0acvmslNKSks",
+                  "28lRvro46YEUyHW2UXJYzP/nz0i4lDWUwdA2cgHoHC5XWWC6RFJReIBuim8RrqjcI9BMaRBqjCCpHna82b0="
+                ]
+        signature:
+          type: object
+          description: Signature of the encrypted payload field using the hash function
+          required: 
+            - complete
+            - splitted
+          properties:
+            complete:
+              type: string
+              description: Complete signature (in one line string)
+              example: "IrRYqzklcE/yv/ZD/EbXApQxSHvEaezedLB0gagD2iMnpdO8VUPteF/L53RQGbNFHkAOzKMVUs6Jrhvs0I0WAQVzWP19tv6DCnJMDp2dlk1DJASOGS8JiUrRK4PHNsbwoVXh3Nh3aquaCpcy0n96fQ2ADk8avrDCWirTq2A9PlKL6DlXO/qYXsJGB14RxHPCOOut/Vw0svQIm+LWwoLeL+qWi85Rd0cDFe4FT1fo5c3U/wgrkO7Qh/wS81I/dQpueI9d4c2V0N/v2c7nyjQxF1+25BGdgLjMWoY4p83D3KMxVhsNv1ZbnIF6vkJ7haENex/E94e2/kGlhjnBIyiFeDOYV8Qc9a3uOgSTXbDd4duqAgBRmrftdr1vWdJUD0312IfxOLHZ9ju/cXM15ndUgSNI+e4dfE3mYE87vApG7gPZC/nDm5wD6UUOOxMMUhbP162pEB+yfZ5q3Iry6BcA/Ou6ygyMSajp5nslr2xywWOtL65fSBlqnM0K0/fJatg+mEiJs2kJhtrPf3MU2AaXgEkTqURBb5KJa+9Wq2cGN4J4vjcHLqC1lVzwx5/iSks27vdno8kbxYAmGn/YxAQ4ic0pzK6zFgqjepwHyVxhah5FbT0CP/iOqQKk7PrFEzFzeIH487CeYXP2DSNy9USMiTcamE1urc8+yCs+8lOQRD4="
+            splitted:
+              type: array
+              items:
+                type: string
+              description: Signature splitted in strings of 200 chars max (Firebase Limitation)
+              example:
+                [
+                  "IrRYqzklcE/yv/ZD/EbXApQxSHvEaezedLB0gagD2iMnpdO8VUPteF/L53RQGbNFHkAOzKMVUs6Jrhvs0I0WAQVzWP19tv6DCnJMDp2dlk1DJASOGS8JiUrRK4PHNsbwoVXh3Nh3aquaCpcy0n96fQ2ADk8avrDCWirTq2A9PlKL6DlXO/qYXsJGB14RxHPCOOut/Vw0",
+                  "svQIm+LWwoLeL+qWi85Rd0cDFe4FT1fo5c3U/wgrkO7Qh/wS81I/dQpueI9d4c2V0N/v2c7nyjQxF1+25BGdgLjMWoY4p83D3KMxVhsNv1ZbnIF6vkJ7haENex/E94e2/kGlhjnBIyiFeDOYV8Qc9a3uOgSTXbDd4duqAgBRmrftdr1vWdJUD0312IfxOLHZ9ju/cXM1",
+                  "5ndUgSNI+e4dfE3mYE87vApG7gPZC/nDm5wD6UUOOxMMUhbP162pEB+yfZ5q3Iry6BcA/Ou6ygyMSajp5nslr2xywWOtL65fSBlqnM0K0/fJatg+mEiJs2kJhtrPf3MU2AaXgEkTqURBb5KJa+9Wq2cGN4J4vjcHLqC1lVzwx5/iSks27vdno8kbxYAmGn/YxAQ4ic0p",
+                  "zK6zFgqjepwHyVxhah5FbT0CP/iOqQKk7PrFEzFzeIH487CeYXP2DSNy9USMiTcamE1urc8+yCs+8lOQRD4="
+                ]
+          
     Device:
       type: object
       required:
@@ -557,7 +714,7 @@ components:
       properties:
         keyId:
           type: string
-          example: "MyKey0"
+          example: "default"
           description: Id of the (private) key in the user's device
         cipher:
           type: string

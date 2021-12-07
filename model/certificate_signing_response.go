@@ -6,10 +6,10 @@ package model
  *
  * API version: 2.0.4
  * Contact: ezequiel.aceto+project-jano@gmail.com
+
  */
 
-type User struct {
-	UserId string `json:"userId" bson:"userId"`
-
-	Certificates []UserCertificate `json:"certificates" bson:"certificates"`
+type CertificateSigningResponse struct {
+	// Chain with user certificate and certificate used for signing
+	Chain string `json:"chain,omitempty"`
 }
