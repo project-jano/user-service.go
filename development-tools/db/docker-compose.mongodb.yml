@@ -5,8 +5,8 @@ services:
     container_name: mongo_db_test
     image: mongo
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=Jano
-      - MONGO_INITDB_ROOT_PASSWORD=Jano
+      - MONGO_INITDB_ROOT_USERNAME=jano
+      - MONGO_INITDB_ROOT_PASSWORD=jano
       - MONGO_INITDB_DATABASE=admin
     restart: unless-stopped
     ports:

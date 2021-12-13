@@ -1,8 +1,9 @@
 package helpers
 
 import (
-	"github.com/spf13/viper"
 	"os"
+
+	"github.com/spf13/viper"
 )
 
 func GetEnvVar(key string, defValue string) string {

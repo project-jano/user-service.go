@@ -64,7 +64,7 @@ func SignCertificateRequest(csr model.CertificateSigningRequest, certificateDura
 	return createPEMChain([]*x509.Certificate{rootCertificate}, signedCsr)
 }
 
-// LoadCertificateAndKey creates x509 and rsa private key from  its PEM files. It validates that the public key of the two public keys matches.
+// LoadCertificateAndKey creates x509 and rsa private key from  its PEM files. It validates that the pub key of the two pub keys matches.
 func LoadCertificateAndKey(certificatePEM, privateKeyPEM string) (*x509.Certificate, *rsa.PrivateKey, error) {
 	decodedCert, _ := pem.Decode([]byte(certificatePEM))
 	decodedPrivateKey, _ := pem.Decode([]byte(privateKeyPEM))

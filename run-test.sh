@@ -1,0 +1,3 @@
+go test -coverprofile=output/tests/coverage.out -tags test ./...
+go test -json ./... > output/tests/report.json
+sonar-scanner

@@ -1,3 +1,8 @@
+# Sonarqube
+output/
+output/tests/report.json
+.scannerwork/
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -10,6 +15,12 @@
 
 # Test binary, built with `go test -c`
 *.test
+
+# Debug files
+__debug_bin
+
+# Log files
+**/*.log
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
@@ -24,7 +35,7 @@ pkg/
 
 # MongoDB Test database
 tests/db
-dev/db/daya
+development-tools/db/db/data
 
 # Binaries
 dist/
@@ -32,3 +43,4 @@ go/bin/
 go/pkg/
 bin/
 
+development-tools/db/data/

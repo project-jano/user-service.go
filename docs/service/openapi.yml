@@ -60,7 +60,7 @@ paths:
       tags:
         - Users
       summary: Signs a certificate request and stores its information
-      description: Signs a CSR with CA, and store certificate, public key and user information into our database.
+      description: Signs a CSR with CA, and store certificate, pub key and user information into our database.
       operationId: SignUserCertificate
       parameters:
         - in: path

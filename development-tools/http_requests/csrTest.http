@@ -1,7 +1,7 @@
 ###
 // Sends a CSR 
 
-POST http://localhost:8080/v2/users/kimi/devices/test-emulator/csr
+POST http://localhost:8080/v2/users/test-user/devices/test-emulator/csr
 Accept: application/json
 Content-Type: application/json
 Authorization: Basic api-user api-password
@@ -20,7 +20,7 @@ Authorization: Basic api-user api-password
 
 ###
 // Secures a message using default device with default key
-POST http://localhost:8080/v2/users/kimi/messages/secure
+POST http://localhost:8080/v2/users/test-user/messages/secure
 Content-Type: application/json
 Authorization: Basic api-user api-password
 
@@ -28,16 +28,15 @@ Authorization: Basic api-user api-password
   "message": "{\"type\":\"debt\",\"amount\":1250.0,\"currency\":\"EUR\",\"commerce\":\"E-Commerce\",\"date\":\"2021-11-20\"}"
 }
 
-
 ###
 // Secures a psh notification information using default device
-POST http://localhost:8080/v2/users/kimi/push-notifications/secure?splittedOutput=true&completeOutput=false
+POST http://localhost:8080/v2/users/test-user/push-notifications/secure?splittedOutput=true&completeOutput=false
 Content-Type: application/json
 Authorization: Basic api-user api-password
 
 {
-  "body": "Debítamos de tu cuenta AR$ 1024 por tu compra en MercadoLibre",
-  "payload": "{\"type\":\"debt\",\"amount\":1024.0,\"currency\":\"ARS\",\"commerce\":\"E-Commerce\",\"date\":\"2021-11-20\"}"
+  "body": "You have paid €1000 at Amazon.uk",
+  "payload": "{\"type\":\"debt\",\"amount\":1000.0,\"currency\":\"ARS\",\"commerce\":\"E-Commerce\",\"date\":\"2022-01-20\"}"
 }
 
 
@@ -52,7 +51,7 @@ GET http://localhost:8080/v2/public/service
 
 ###
 // SHOULD FAIL! Secures a message using default device and unknown key
-POST http://localhost:8080/v2/users/kimi/messages/secure?keyId=unknown
+POST http://localhost:8080/v2/users/test-user/messages/secure?keyId=unknown
 Content-Type: application/json
 Authorization: Basic api-user api-password
 
@@ -62,7 +61,7 @@ Authorization: Basic api-user api-password
 
 ###
 // SHOULD FAIL! Secures a message using an unknown device and default key
-POST http://localhost:8080/v2/users/kimi/messages/secure?deviceIds=unknown
+POST http://localhost:8080/v2/users/test-user/messages/secure?deviceIds=unknown
 Content-Type: application/json
 Authorization: Basic api-user api-password
 

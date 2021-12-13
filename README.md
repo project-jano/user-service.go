@@ -38,11 +38,11 @@ This will generate two files:
 Build an image, tagging it with a specific version
 
 ```sh
-docker build -t projectjano/user-service:${VERSION} .
+[sudo] docker build -t projectjano/user-service:${VERSION} .
 ```
 
 Running the built image
 
 ````sh
-docker run -p 8080:8080 projectjano/user-service:${VERSION} 
+[sudo] docker run -p 8080:8080 projectjano/user-service:${VERSION} 
 ````

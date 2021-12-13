@@ -25,3 +25,12 @@ func SplitString(s string, chunkSize int) []string {
 	}
 	return chunks
 }
+
+func ContainsStringInStringArray(arr []string, key string) bool {
+	for _, str := range arr {
+		if str == key {
+			return true
+		}
+	}
+	return false
+}
